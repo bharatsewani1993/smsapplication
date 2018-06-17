@@ -3,3 +3,11 @@ This is Short Message Sending Web application where I am using Twilio API to sen
 
 ## Current Features
 1. Just Initiated 
+
+## To Do
+1. Setup Template
+2. Login/Logout
+3. Send SMS
+4. Recieve SMS
+5. Check Send SMS Log
+6. Check Recieved SMS Log
