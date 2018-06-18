@@ -37,27 +37,45 @@ func verifyuser(w http.ResponseWriter, r *http.Request){
       }
 
       //validate username and password from database
-        validatecreds(r.Form["email"][0],r.Form["password"][0])
+       loginsuccess := validatecreds(r.Form["email"][0],r.Form["password"][0])
+       if loginsuccess {
+         fmt.Fprintf(w,"loginsuccess")
+       } else {
+         fmt.Fprintf(w,"failed")
+       }
 }
 
 func validatecreds(email string, password string) bool {
    db := dbconnection()
-   stmt, err := db.Prepare("Select * from login_table where username=? and password=?")
+   fmt.Println("Username and Password\n",email,password)
+
+   stmt, err := db.Prepare("Select username,password from login_table where username=? and password=?")
    if err != nil {
      fmt.Printf("Error \n",err)
    }
+   defer stmt.Close()
 
-   result, err := stmt.Exec(email,password)
-   if err != nil{
-     fmt.Printf("Error \n", err)
-   }
-
-   effect,err := result.RowsAffected()
+   rows, err := stmt.Query(email,password)
    if err != nil {
-     fmt.Println("Error \n",err)
+     fmt.Printf("Error \n",err)
    }
-   fmt.Println("Effect ", effect)
-   return true
+   defer rows.Close()
+
+   count := 0
+   for rows.Next(){
+    // var dbuser string
+    // var dbpassword string
+    // _ = rows.Scan(&dbuser,&dbpassword)
+    // fmt.Println(dbuser)
+     count ++
+   }
+
+   if count == 1 {
+     return true
+   } else {
+    return false
+   }
+
 }
 
 func dbconnection() (*sql.DB){

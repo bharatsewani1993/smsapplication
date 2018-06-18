@@ -12,3 +12,4 @@ This is Short Message Sending Web application where I am using Twilio API to sen
 4. Check Send SMS Log
 5. Check Recieved SMS Log
 6. Add CSRF and XSS Protection
+7. Emplement md5 on password
