@@ -32,7 +32,8 @@
               if (msg == "failed"){
                  $("#errormsg").html("<p>Invalid Username and Password!");
                } else if (msg == "loginsuccess") {
-                 window.location.replace("localhost:9090/sendsms/");
+                // window.location.replace("localhost:9090/sendsms/");
+                window.location.href = "http://localhost:9090/sendsms/"
                }
               }
             });

@@ -1,0 +1,37 @@
+<html>
+        <head>
+              <title>Send SMS</title>
+              <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        </head>
+</html>
+<body>
+       <div>
+          <div>
+                <label>Phone Number </label>
+                <input type="text" name="phonenumber" id="phonenumberid" placeholder="Number" />
+          </div>
+          <div>
+               <label>Your Message</label>
+               <input type="text" name="message" id="messageid" placeholder="Your Message" />
+          </div>
+          <button type="button" href="javascript:void(0);" onclick="sendsms();">Send Message</button>
+          <div id="errormsg"></div>
+       </div>
+       <script>
+         var sendsms = function(){
+             alert("Hello World");
+             var dataString = {};
+             dataString.number = $("#phonenumberid").val();
+             dataString.message = $("#messageid").val();
+           //  dataString.validation_token = Cookies.get('_xsrf');
+             $.ajax({
+               type: "POST",
+               url: "/forwardsms/",
+               data: dataString,
+               success: function(msg){
+                 $("#errormsg").html(msg);
+               }
+            });
+           }         
+       </script>
+</body>

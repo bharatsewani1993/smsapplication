@@ -7,6 +7,7 @@ import(
   "fmt"
   "database/sql"
   _"github.com/go-sql-driver/mysql"
+  "regexp"
 )
 
 func login(w http.ResponseWriter, r *http.Request){
@@ -86,9 +87,54 @@ func dbconnection() (*sql.DB){
   return db
 }
 
+func sendsms(w http.ResponseWriter, r *http.Request){
+  t, err := template.ParseFiles("sendsms.html")
+  if err != nil{
+    log.Fatal(err)
+  }
+  fmt.Println(t.Execute(w,nil))
+}
+
+func forwardsms(w http.ResponseWriter, r *http.Request){
+  r.ParseForm()
+
+  //form validation
+    var validationerror = ""
+    //phone number required
+    if len(r.Form["number"][0]) == 0 {
+      validationerror += "<p> Phone Number Required! </p>"
+    }
+
+    //phone number must be 12 digit with country code
+    if len(r.Form["number"][0]) != 12 {
+      validationerror += "<p> Please enter a valid phone number </p>"
+    }
+
+    //phone number should only contain number.
+    if m, _ := regexp.MatchString("^[0-9]+$", r.Form.Get("age")); !m {
+      validationerror += "<p> Phone Number should Contain only Number</p>"
+    }
+
+    //Message required
+    if len(r.Form["message"][0]) == 0 {
+      validationerror += "<p> Please enter valid message </p>"
+    }
+
+    if validationerror == "" {
+       //no validation error send sms
+        
+
+    } else {
+      //validation error
+        fmt.Fprintf(w,validationerror)
+    }
+}
+
 func main(){
    http.HandleFunc("/",login)
    http.HandleFunc("/verifyuser/",verifyuser)
+   http.HandleFunc("/sendsms/",sendsms)
+   http.HandleFunc("/forwardsms/",forwardsms)
    err := http.ListenAndServe(":9090",nil)
    if err != nil{
      log.Fatal("ListenandServe",err)
