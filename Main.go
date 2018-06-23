@@ -8,7 +8,14 @@ import(
   "database/sql"
   _"github.com/go-sql-driver/mysql"
   "regexp"
+  "github.com/subosito/twilio"
 )
+
+var (
+	AccountSid = ""
+	AuthToken  = ""
+)
+
 
 func login(w http.ResponseWriter, r *http.Request){
    t,err := template.ParseFiles("login.html")
@@ -96,6 +103,7 @@ func sendsms(w http.ResponseWriter, r *http.Request){
 }
 
 func forwardsms(w http.ResponseWriter, r *http.Request){
+  fmt.Fprintf(w,"<br> Forward SMS called!")
   r.ParseForm()
 
   //form validation
@@ -111,7 +119,7 @@ func forwardsms(w http.ResponseWriter, r *http.Request){
     }
 
     //phone number should only contain number.
-    if m, _ := regexp.MatchString("^[0-9]+$", r.Form.Get("age")); !m {
+    if m, _ := regexp.MatchString("^[0-9]+$", r.Form.Get("number")); !m {
       validationerror += "<p> Phone Number should Contain only Number</p>"
     }
 
@@ -122,11 +130,19 @@ func forwardsms(w http.ResponseWriter, r *http.Request){
 
     if validationerror == "" {
        //no validation error send sms
-        
-
+       fmt.Fprintf(w,"<br> No validation error found")
+        c := twilio.NewClient(AccountSid, AuthToken, nil)
+        params := twilio.MessageParams{
+          Body: r.Form["message"][0],
+        }
+        m, response, err := c.Messages.Send("+FROMNUMBER", "+"+r.Form["number"][0], params)
+        if err != nil {
+          log.Fatal(m, response, err)
+        }
+        fmt.Fprintf(w,m.Status)
     } else {
       //validation error
-        fmt.Fprintf(w,validationerror)
+        fmt.Fprintf(w,"<br>" + validationerror)
     }
 }
 
